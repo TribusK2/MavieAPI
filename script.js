@@ -2,16 +2,21 @@
 function submitRequest(){
     let movieTitle = document.getElementById('movieTitle').value;
     if(movieTitle !== ''){
-        const xhttp = new XMLHttpRequest();
-        // xhttp.open("GET", "http://www.omdbapi.com/?apikey=6a2ecd76&t=Requiem+for+a+Dream&plot=full", true);
-        xhttp.open("GET", "response.json", true);
+        // prepare data to url request
+        let movieTitleUrl = movieTitle.split(' ').join('+');
+        
+        // create request
+        let xhttp = new XMLHttpRequest();
+        let url = "http://www.omdbapi.com/?apikey=6a2ecd76&t="+movieTitleUrl+"&plot=full";
+        xhttp.open("GET", url, true);
+        // xhttp.open("GET", "response.json", true);
         
         xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                // document.getElementById("request").innerHTML = xhttp.responseText;
+            if (this.readyState == 4 && this.status == 200) {            
                 var data = JSON.parse(this.response)
-                document.getElementById("request").innerHTML = data.Title;
-            
+                document.getElementById("request").innerHTML = data;
+                document.getElementById("request2").innerHTML = this.response;
+                
             }
         };
         
