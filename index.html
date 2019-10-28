@@ -15,16 +15,17 @@
     </header>
     <main>
         <!-- request form -->
-        <form id="movieSearch" action="index.html" method="GET">
+        <form id="movieSearch" action="#" method="GET">
             <label for="movieTitle">Podaj tytuł filmu</label>
-            <input type="text" name="movieTitle" required autofocus>
-            <button>Szukaj</button>
+            <input id="movieTitle" type="text" name="movieTitle" required autofocus>
+            <button type="button" onclick="submitRequest()">Szukaj</button>
+            <small id="formMessage"></small>
         </form>
         <hr>
         <!-- request form end -->
 
         <!-- response result -->
-
+        <p id="request"></p>
         <!-- response result end -->
     </main>
 </body>
