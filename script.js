@@ -1,5 +1,55 @@
 "use strict"
 
+// function to create html tags to display searching results
+function createResult(data, i){
+    let result = document.createElement('div');
+    result.setAttribute('class', 'result');
+
+    let imgResult = document.createElement('img');
+    imgResult.setAttribute('src', data.Search[i].Poster);
+
+    let resultTitle = document.createElement('h3');
+    resultTitle.setAttribute('class', 'resultTitle');
+
+    let resultYear = document.createElement('h3');
+    resultYear.setAttribute('class', 'resultYear');
+
+    searchResult.appendChild(result);
+    result.appendChild(imgResult);
+    result.appendChild(resultTitle);
+    resultTitle.appendChild(document.createTextNode(data.Search[i].Title));
+    result.appendChild(resultYear);
+    resultYear.appendChild(document.createTextNode(data.Search[i].Year));
+}
+
+// function to send request and get movies details from respond
+function getMoviesDetails(displayResultCount, data, pageNumber){
+    for(let i = 0 + pageNumber * displayResultCount; i < displayResultCount + pageNumber * displayResultCount; i++){
+
+        // create request for direct movie
+        let subXhttp = new XMLHttpRequest();
+        // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+movie.imdbID;
+        // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
+        // subXhttp.open("GET", url, true);
+        subXhttp.open("GET", "movie.json", true);
+
+        subXhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                if(this.response){
+                    // create html tags and display response data
+                    createResult(data, i);                         
+                }
+                // else{
+                //     let movieData = {'error': 'brak danych'};
+                //     document.getElementById("request").innerHTML = data.error;
+                // }
+            }
+        }
+        subXhttp.send();
+    };
+}
+
+
 function submitRequest(){
     
     let movieTitle = document.getElementById('movieTitle').value;
@@ -18,62 +68,34 @@ function submitRequest(){
 
                 if(this.response){
                 
-                // decode response
-                let data = JSON.parse(this.response);
+                    // decode response
+                    let data = JSON.parse(this.response);
+                    let moviesCount = Object.keys(data.Search).length;
+                    
+                    let searchResult = document.getElementById('searchResult');
 
-                // set url request of all searched movies
-                // data.Search.forEach(movie => {
-                //     moviesUrl.push('http://www.omdbapi.com/?i='+movie.imdbID);
-                // });
+                    let displayResultCount = 2;
+                    let pageNumber = 0;
 
-                let searchResult = document.getElementById('searchResult');
+                    // display first results
+                    getMoviesDetails(displayResultCount, data, pageNumber);
 
-                data.Search.forEach(movie => {
-                    let subXhttp = new XMLHttpRequest();
-                    // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+movie.imdbID;
-                    // subXhttp.open("GET", url, true);
-                    subXhttp.open("GET", "movie.json", true);
-                    subXhttp.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            if(this.response){
-                                // let movieDetails = JSON.parse(this.response);
-                               
-                                // create html tags and display searched data
-                                let result = document.createElement('div');
-                                result.setAttribute('class', 'result');
+                    // display next result when scroll
+                    window.onscroll = function() {
+                        let scrollPosition = window.pageYOffset;
+                        let resultHeight = searchResult.offsetHeight;
+                        let windowHeight = window.innerHeight;
 
-                                let imgResult = document.createElement('img');
-                                imgResult.setAttribute('src', movie.Poster);
-
-                                let resultTitle = document.createElement('h3');
-                                resultTitle.setAttribute('class', 'resultTitle');
-
-                                let resultYear = document.createElement('h3');
-                                resultYear.setAttribute('class', 'resultYear');
-
-                                let moreButton = document.createElement('button');
-                                moreButton.setAttribute('class', 'moreButton');
-
-                                searchResult.appendChild(result);
-                                result.appendChild(imgResult);
-                                result.appendChild(resultTitle);
-                                resultTitle.appendChild(document.createTextNode(movie.Title));
-                                result.appendChild(resultYear);
-                                resultYear.appendChild(document.createTextNode(movie.Year));             
-                            
+                        if(scrollPosition > resultHeight - windowHeight){
+                            if(displayResultCount * pageNumber < moviesCount){
+                                pageNumber += 1;
+                                getMoviesDetails(displayResultCount, data, pageNumber);
                             }
-                            // else{
-                            //     let movieData = {'error': 'brak danych'};
-                            //     document.getElementById("request").innerHTML = data.error;
-                            // }
-                        }
-                    }
-                    subXhttp.send();
-                   
-                });
+                        };
 
-                // document.getElementById("request").innerHTML = data.Search[0].Title;
-                // document.getElementById("request").innerHTML = movies;
+                    };
+                    // document.getElementById("request").innerHTML = data.Search[0].Title;
+                    // document.getElementById("request").innerHTML = movies;
                 }else{
                     let data = {'error': 'brak danych'};
                     document.getElementById("request").innerHTML = data.error;
