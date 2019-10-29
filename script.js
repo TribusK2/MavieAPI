@@ -1,5 +1,10 @@
 "use strict"
 
+let displayResultCount = 2;
+let pageNumber = 0;
+let moviesCount;
+let data;
+
 // function to create html tags to display searching results
 function createResult(data, i){
     let result = document.createElement('div');
@@ -22,9 +27,16 @@ function createResult(data, i){
     resultYear.appendChild(document.createTextNode(data.Search[i].Year));
 }
 
-// function to send request and get movies details from respond
-function getMoviesDetails(displayResultCount, data, pageNumber){
-    for(let i = 0 + pageNumber * displayResultCount; i < displayResultCount + pageNumber * displayResultCount; i++){
+// function to send request and get movies details from response
+function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount){
+    let counter;
+    if (displayResultCount + pageNumber * displayResultCount < moviesCount){
+        counter = displayResultCount + pageNumber * displayResultCount;
+    }else{
+        counter = moviesCount;
+    }
+
+    for(let i = 0 + pageNumber * displayResultCount; i < counter; i++){
 
         // create request for direct movie
         let subXhttp = new XMLHttpRequest();
@@ -39,16 +51,17 @@ function getMoviesDetails(displayResultCount, data, pageNumber){
                     // create html tags and display response data
                     createResult(data, i);                         
                 }
-                // else{
-                //     let movieData = {'error': 'brak danych'};
-                //     document.getElementById("request").innerHTML = data.error;
-                // }
+                else{
+                    // let movieData = {'error': 'brak danych'};
+                    console.log('aaa');
+                    document.getElementById("request").innerHTML = 'brak danych';
+                }
             }
         }
         subXhttp.send();
+        console.log(i);
     };
 }
-
 
 function submitRequest(){
     
@@ -69,33 +82,14 @@ function submitRequest(){
                 if(this.response){
                 
                     // decode response
-                    let data = JSON.parse(this.response);
-                    let moviesCount = Object.keys(data.Search).length;
+                    data = JSON.parse(this.response);
+                    moviesCount = Object.keys(data.Search).length;
                     
                     let searchResult = document.getElementById('searchResult');
 
-                    let displayResultCount = 2;
-                    let pageNumber = 0;
-
                     // display first results
-                    getMoviesDetails(displayResultCount, data, pageNumber);
+                    getMoviesDetails(displayResultCount, data, pageNumber, moviesCount);
 
-                    // display next result when scroll
-                    window.onscroll = function() {
-                        let scrollPosition = window.pageYOffset;
-                        let resultHeight = searchResult.offsetHeight;
-                        let windowHeight = window.innerHeight;
-
-                        if(scrollPosition > resultHeight - windowHeight){
-                            if(displayResultCount * pageNumber < moviesCount){
-                                pageNumber += 1;
-                                getMoviesDetails(displayResultCount, data, pageNumber);
-                            }
-                        };
-
-                    };
-                    // document.getElementById("request").innerHTML = data.Search[0].Title;
-                    // document.getElementById("request").innerHTML = movies;
                 }else{
                     let data = {'error': 'brak danych'};
                     document.getElementById("request").innerHTML = data.error;
@@ -109,3 +103,24 @@ function submitRequest(){
     }
 }
 
+// display next result when scroll
+var didScroll = false;
+window.onscroll = function() {
+        didScroll = true;       
+};
+
+setInterval(function() {
+    if ( didScroll ) {
+        didScroll = false;
+        let scrollPosition = window.pageYOffset;
+        let documentHeight = document.documentElement.scrollHeight;
+        let windowHeight = window.innerHeight;
+
+        if(scrollPosition > documentHeight - windowHeight - 1){
+            if(displayResultCount * pageNumber < moviesCount){
+                pageNumber += 1;
+                getMoviesDetails(displayResultCount, data, pageNumber, moviesCount);
+            }
+        };
+    }
+}, 1000);
