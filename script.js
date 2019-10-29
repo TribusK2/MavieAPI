@@ -12,6 +12,21 @@ function addResultElement(elementType, className, textNode, parentElement){
     element.appendChild(document.createTextNode(textNode));
 }
 
+function removeResultElement(...args){
+    args.forEach(element => {
+        let elements = document.getElementsByClassName(element);
+        while(elements.length > 0){
+            elements[0].parentNode.removeChild(elements[0]);
+        }
+    }); 
+}
+// function removeResultElement(className){
+//     let elements = document.getElementsByClassName(className);
+//     while(elements.length > 0){
+//         elements[0].parentNode.removeChild(elements[0]);
+//     }
+// }
+
 // function to create html tags to display searching results
 function createResult(movieData, i){
     if(data.Search[i]){
@@ -21,6 +36,7 @@ function createResult(movieData, i){
 
         let imgResult = document.createElement('img');
         imgResult.setAttribute('src', movieData.Poster);
+        imgResult.setAttribute('class', 'mavieImage');
         result.appendChild(imgResult);
 
         addResultElement('h3', 'title', 'Tytuł: '+movieData.Title, result);
@@ -65,7 +81,7 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
             if (this.readyState == 4 && this.status == 200) {
                 if(this.response){
                     movieData = JSON.parse(this.response);
-                    console.log(movieData);
+
                     // create html tags and display response data
                     createResult(movieData, i);                         
                 }
@@ -80,6 +96,11 @@ function submitRequest(){
     
     let movieTitle = document.getElementById('movieTitle').value;
     if(movieTitle !== ''){
+        // reset values form previuos searching
+        removeResultElement('result');
+        pageNumber = 0;
+        data = {'Error': 'No more data'};
+
         // prepare data to url search request
         let movieTitleUrl = movieTitle.split(' ').join('+');
         
