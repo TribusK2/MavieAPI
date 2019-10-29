@@ -3,32 +3,49 @@
 let displayResultCount = 2;
 let pageNumber = 0;
 let moviesCount;
-let data;
+let data = {'Error': 'No more data'};
+
+function addResultElement(elementType, className, textNode, parentElement){
+    let element = document.createElement(elementType);
+    element.setAttribute('class', className);
+    parentElement.appendChild(element);
+    element.appendChild(document.createTextNode(textNode));
+}
 
 // function to create html tags to display searching results
-function createResult(data, i){
-    let result = document.createElement('div');
-    result.setAttribute('class', 'result');
+function createResult(movieData, i){
+    if(data.Search[i]){
+        let result = document.createElement('div');
+        result.setAttribute('class', 'result');
+        searchResult.appendChild(result);
 
-    let imgResult = document.createElement('img');
-    imgResult.setAttribute('src', data.Search[i].Poster);
+        let imgResult = document.createElement('img');
+        imgResult.setAttribute('src', movieData.Poster);
+        result.appendChild(imgResult);
 
-    let resultTitle = document.createElement('h3');
-    resultTitle.setAttribute('class', 'resultTitle');
+        addResultElement('h3', 'title', 'Tytuł: '+movieData.Title, result);
+        if(movieData.Awards !== 'N/A' && movieData.Awards !== ''){
+            addResultElement('span', 'awards', 'Awarded', result);
+        }
+        addResultElement('p', 'released', 'Data produkcji: '+movieData.Released, result);
+        addResultElement('p', 'runtime', 'Czas trwania: '+movieData.Runtime, result);
+        addResultElement('p', 'ratings', 'Ranking: '+movieData.Ratings[0].Value, result);
+        addResultElement('p', 'plot', 'Opis: '+movieData.Plot, result);
+    }else{
+        let result = document.createElement('div');
+        result.setAttribute('class', 'result');
 
-    let resultYear = document.createElement('h3');
-    resultYear.setAttribute('class', 'resultYear');
+        let resultTitle = document.createElement('h3');
+        resultTitle.setAttribute('class', 'resultNoData');
 
-    searchResult.appendChild(result);
-    result.appendChild(imgResult);
-    result.appendChild(resultTitle);
-    resultTitle.appendChild(document.createTextNode(data.Search[i].Title));
-    result.appendChild(resultYear);
-    resultYear.appendChild(document.createTextNode(data.Search[i].Year));
+        searchResult.appendChild(result);
+        result.appendChild(resultTitle);
+        resultTitle.appendChild(document.createTextNode('Brak danych'));
+    }
 }
 
 // function to send request and get movies details from response
-function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount){
+function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, movieData){
     let counter;
     if (displayResultCount + pageNumber * displayResultCount < moviesCount){
         counter = displayResultCount + pageNumber * displayResultCount;
@@ -40,7 +57,6 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount){
 
         // create request for direct movie
         let subXhttp = new XMLHttpRequest();
-        // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+movie.imdbID;
         // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
         // subXhttp.open("GET", url, true);
         subXhttp.open("GET", "movie.json", true);
@@ -48,21 +64,18 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount){
         subXhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 if(this.response){
+                    movieData = JSON.parse(this.response);
+                    console.log(movieData);
                     // create html tags and display response data
-                    createResult(data, i);                         
-                }
-                else{
-                    // let movieData = {'error': 'brak danych'};
-                    console.log('aaa');
-                    document.getElementById("request").innerHTML = 'brak danych';
+                    createResult(movieData, i);                         
                 }
             }
         }
         subXhttp.send();
-        console.log(i);
     };
 }
 
+// submit request
 function submitRequest(){
     
     let movieTitle = document.getElementById('movieTitle').value;
@@ -83,20 +96,21 @@ function submitRequest(){
                 
                     // decode response
                     data = JSON.parse(this.response);
-                    moviesCount = Object.keys(data.Search).length;
-                    
-                    let searchResult = document.getElementById('searchResult');
 
-                    // display first results
-                    getMoviesDetails(displayResultCount, data, pageNumber, moviesCount);
+                    if(data.Search){
+                        moviesCount = Object.keys(data.Search).length;
 
-                }else{
-                    let data = {'error': 'brak danych'};
-                    document.getElementById("request").innerHTML = data.error;
+                        let searchResult = document.getElementById('searchResult');
+
+                        // display first results
+                        getMoviesDetails(displayResultCount, data, pageNumber, moviesCount);
+                    }else{
+                        document.getElementById("request").innerHTML = data.Error;
+                    }
                 }
             }
-        };
-                
+        }
+        document.getElementById("request").innerHTML = data.Error;
         xhttp.send();
     }else{
         document.getElementById('formMessage').innerHTML = "Podaj tytuł filmu";
@@ -108,9 +122,8 @@ var didScroll = false;
 window.onscroll = function() {
         didScroll = true;       
 };
-
 setInterval(function() {
-    if ( didScroll ) {
+    if (didScroll) {
         didScroll = false;
         let scrollPosition = window.pageYOffset;
         let documentHeight = document.documentElement.scrollHeight;
