@@ -40,6 +40,10 @@ function createResult(movieData, i){
         movieData.Ratings[0]? ratings = movieData.Ratings[0].Value : ratings = 'No data';
         movieData.Plot == 'N/A' || movieData.Plot == ''? plot = 'No data' : plot = movieData.Plot;
 
+        // cut description to 100 characters
+        let dots = '...';
+        plot.length > 100? plot = plot.slice(0,100).concat(dots) : plot;
+
         // create html elements and put data
         let result = document.createElement('div');
         result.setAttribute('class', 'result');
@@ -82,9 +86,9 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
 
         // create request for direct movie
         let subXhttp = new XMLHttpRequest();
-        let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
-        subXhttp.open("GET", url, true);
-        // subXhttp.open("GET", "movie.json", true);
+        // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
+        // subXhttp.open("GET", url, true);
+        subXhttp.open("GET", "movie.json", true);
 
         subXhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -115,9 +119,9 @@ function submitRequest(){
         
         // create search request
         let xhttp = new XMLHttpRequest();
-        let url = "http://www.omdbapi.com/?apikey=6a2ecd76&s="+movieTitleUrl+"&type=series";
-        xhttp.open("GET", url, true);
-        // xhttp.open("GET", "response.json", true);
+        // let url = "http://www.omdbapi.com/?apikey=6a2ecd76&s="+movieTitleUrl+"&type=series";
+        // xhttp.open("GET", url, true);
+        xhttp.open("GET", "response.json", true);
         
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
