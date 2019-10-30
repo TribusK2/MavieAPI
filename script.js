@@ -118,6 +118,7 @@ function submitRequest(){
         removeResultElement('result');
         pageNumber = 0;
         data = {'Error': 'No more data'};
+        document.getElementById('sortMovies').options.selectedIndex = 0;
 
         // prepare data to url search request
         let movieTitleUrl = movieTitle.split(' ').join('+');
@@ -205,16 +206,38 @@ function sortMovies(){
         newMoviesList.push(newMovieObj);
     }
 
+    // function to render sorted movies
+    function renderMovies(){
+        let poster_s = document.getElementsByClassName('movieImage');
+        let title_s = document.getElementsByClassName('title');
+        let awards_s = document.getElementsByClassName('awards');
+        let released_s = document.getElementsByClassName('released');
+        let runtime_s = document.getElementsByClassName('runtime');
+        let ratings_s = document.getElementsByClassName('ratings');
+        let plot_s = document.getElementsByClassName('plot');
+        for(let i=0; i < newMoviesList.length; i++){
+            poster_s[i].src = newMoviesList[i].poster;
+            title_s[i].innerHTML = titleLabel+newMoviesList[i].title;
+            awards_s[i].innerHTML = newMoviesList[i].awards;
+            released_s[i].innerHTML = relasedLabel+newMoviesList[i].released;
+            runtime_s[i].innerHTML = runtimeLabel+newMoviesList[i].runtime;
+            ratings_s[i].innerHTML = ratingsLabel+newMoviesList[i].ratings;
+            plot_s[i].innerHTML = plotLabel+newMoviesList[i].plot;
+        }
+    }
     // sort movies depend of sort type
     switch (sortType) {
         case 'titleSort':
             newMoviesList.sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+            renderMovies();
             break;
         case 'ratingSort':
             newMoviesList.sort((a,b) => (a.ratings > b.ratings) ? -1 : ((b.ratings > a.ratings) ? 1 : 0));
+            renderMovies();
             break;
         case 'relaseDateSort':
             newMoviesList.sort((a,b) => (a.released > b.released) ? -1 : ((b.released > a.released) ? 1 : 0));
+            renderMovies();
             break;
     }      
 }
