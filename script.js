@@ -20,33 +20,42 @@ function removeResultElement(...args){
         }
     }); 
 }
-// function removeResultElement(className){
-//     let elements = document.getElementsByClassName(className);
-//     while(elements.length > 0){
-//         elements[0].parentNode.removeChild(elements[0]);
-//     }
-// }
 
-// function to create html tags to display searching results
+// function to create html tags and display searching results
 function createResult(movieData, i){
     if(data.Search[i]){
+        // check data exist
+        let poster;
+        let title;
+        let awards;
+        let released;
+        let runtime;
+        let ratings;
+        let plot;
+        movieData.Poster == 'N/A' || movieData.Poster == ''? poster = 'default_pic.png' : poster = movieData.Poster;
+        movieData.Title == 'N/A' || movieData.Title == ''? title = 'No data' : title = movieData.Title;
+        movieData.Awards == 'N/A' || movieData.Awards == ''? awards = '' : awards = 'Awarded';
+        movieData.Released == 'N/A' || movieData.Released == ''? released = 'No data' : released = movieData.Released;
+        movieData.Runtime == 'N/A' || movieData.Runtime == ''? runtime = 'No data' : runtime = movieData.Runtime;
+        movieData.Ratings[0]? ratings = movieData.Ratings[0].Value : ratings = 'No data';
+        movieData.Plot == 'N/A' || movieData.Plot == ''? plot = 'No data' : plot = movieData.Plot;
+
+        // create html elements and put data
         let result = document.createElement('div');
         result.setAttribute('class', 'result');
         searchResult.appendChild(result);
 
         let imgResult = document.createElement('img');
-        imgResult.setAttribute('src', movieData.Poster);
+        imgResult.setAttribute('src', poster);
         imgResult.setAttribute('class', 'mavieImage');
         result.appendChild(imgResult);
 
-        addResultElement('h3', 'title', 'Tytuł: '+movieData.Title, result);
-        if(movieData.Awards !== 'N/A' && movieData.Awards !== ''){
-            addResultElement('span', 'awards', 'Awarded', result);
-        }
-        addResultElement('p', 'released', 'Data produkcji: '+movieData.Released, result);
-        addResultElement('p', 'runtime', 'Czas trwania: '+movieData.Runtime, result);
-        addResultElement('p', 'ratings', 'Ranking: '+movieData.Ratings[0].Value, result);
-        addResultElement('p', 'plot', 'Opis: '+movieData.Plot, result);
+        addResultElement('h3', 'title', 'Title: '+title, result);
+        addResultElement('span', 'awards', awards, result);
+        addResultElement('p', 'released', 'Released: '+released, result);
+        addResultElement('p', 'runtime', 'Runtime: '+runtime, result);
+        addResultElement('p', 'ratings', 'Ratings: '+ratings, result);
+        addResultElement('p', 'plot', 'Description: '+plot, result);
     }else{
         let result = document.createElement('div');
         result.setAttribute('class', 'result');
@@ -73,9 +82,9 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
 
         // create request for direct movie
         let subXhttp = new XMLHttpRequest();
-        // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
-        // subXhttp.open("GET", url, true);
-        subXhttp.open("GET", "movie.json", true);
+        let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
+        subXhttp.open("GET", url, true);
+        // subXhttp.open("GET", "movie.json", true);
 
         subXhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -106,9 +115,9 @@ function submitRequest(){
         
         // create search request
         let xhttp = new XMLHttpRequest();
-        // let url = "http://www.omdbapi.com/?apikey=6a2ecd76&s="+movieTitleUrl+"&type=series";
-        // xhttp.open("GET", url, true);
-        xhttp.open("GET", "response.json", true);
+        let url = "http://www.omdbapi.com/?apikey=6a2ecd76&s="+movieTitleUrl+"&type=series";
+        xhttp.open("GET", url, true);
+        // xhttp.open("GET", "response.json", true);
         
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
