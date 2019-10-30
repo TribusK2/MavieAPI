@@ -22,6 +22,11 @@ function removeResultElement(...args){
 }
 
 // function to create html tags and display searching results
+let titleLabel = 'Title: ';
+let relasedLabel = 'Released: ';
+let runtimeLabel = 'Runtime: ';
+let ratingsLabel = 'Ratings: ';
+let plotLabel = 'Description: ';
 function createResult(movieData, i){
     if(data.Search[i]){
         // check data exist
@@ -51,15 +56,15 @@ function createResult(movieData, i){
 
         let imgResult = document.createElement('img');
         imgResult.setAttribute('src', poster);
-        imgResult.setAttribute('class', 'mavieImage');
+        imgResult.setAttribute('class', 'movieImage');
         result.appendChild(imgResult);
 
-        addResultElement('h3', 'title', 'Title: '+title, result);
+        addResultElement('h3', 'title', titleLabel+title, result);
         addResultElement('span', 'awards', awards, result);
-        addResultElement('p', 'released', 'Released: '+released, result);
-        addResultElement('p', 'runtime', 'Runtime: '+runtime, result);
-        addResultElement('p', 'ratings', 'Ratings: '+ratings, result);
-        addResultElement('p', 'plot', 'Description: '+plot, result);
+        addResultElement('p', 'released', relasedLabel+released, result);
+        addResultElement('p', 'runtime', runtimeLabel+runtime, result);
+        addResultElement('p', 'ratings', ratingsLabel+ratings, result);
+        addResultElement('p', 'plot', plotLabel+plot, result);
     }else{
         let result = document.createElement('div');
         result.setAttribute('class', 'result');
@@ -69,7 +74,7 @@ function createResult(movieData, i){
 
         searchResult.appendChild(result);
         result.appendChild(resultTitle);
-        resultTitle.appendChild(document.createTextNode('Brak danych'));
+        resultTitle.appendChild(document.createTextNode('No data'));
     }
 }
 
@@ -88,7 +93,7 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
         let subXhttp = new XMLHttpRequest();
         // let url = 'http://www.omdbapi.com/?apikey=6a2ecd76&i='+data.Search[i].imdbID;
         // subXhttp.open("GET", url, true);
-        subXhttp.open("GET", "movie.json", true);
+        subXhttp.open("GET", "movie"+i+".json", true);
 
         subXhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -104,7 +109,7 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
     };
 }
 
-// submit request
+// search submit request
 function submitRequest(){
     
     let movieTitle = document.getElementById('movieTitle').value;
@@ -171,3 +176,45 @@ setInterval(function() {
         };
     }
 }, 1000);
+
+// sort function
+function sortMovies(){
+    // get sort type from input list
+    let sortType = document.getElementById('sortMovies').value;
+
+    // get all movies from actual responses
+    let movies = document.getElementsByClassName('result');
+    
+    // set movie class to define all movies as objects
+    class Movie {
+        constructor(i) {
+          this.poster = movies[i].children[0].src;
+          this.title = movies[i].children[1].innerHTML.substring(titleLabel.length);
+          this.awards = movies[i].children[2].innerHTML;
+          this.released = movies[i].children[3].innerHTML.substring(relasedLabel.length);
+          this.runtime = movies[i].children[4].innerHTML.substring(runtimeLabel.length);
+          this.ratings = movies[i].children[5].innerHTML.substring(ratingsLabel.length);
+          this.plot = movies[i].children[6].innerHTML.substring(plotLabel.length);
+        }
+      }
+
+    // create array of actual movies
+    let newMoviesList = [];
+    for(let i=0; i < movies.length; i++){
+        let newMovieObj = new Movie(i);
+        newMoviesList.push(newMovieObj);
+    }
+
+    // sort movies depend of sort type
+    switch (sortType) {
+        case 'titleSort':
+            newMoviesList.sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+            break;
+        case 'ratingSort':
+            newMoviesList.sort((a,b) => (a.ratings > b.ratings) ? -1 : ((b.ratings > a.ratings) ? 1 : 0));
+            break;
+        case 'relaseDateSort':
+            newMoviesList.sort((a,b) => (a.released > b.released) ? -1 : ((b.released > a.released) ? 1 : 0));
+            break;
+    }      
+}

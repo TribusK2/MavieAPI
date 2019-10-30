@@ -16,13 +16,33 @@
     <main>
         <!-- request form -->
         <form id="movieSearch" action="#" method="GET">
-            <label for="movieTitle">Podaj tytuł filmu</label>
+            <label for="movieTitle">Get title</label>
             <input id="movieTitle" type="text" value="game" name="movieTitle" required autofocus>
-            <button type="button" onclick="submitRequest()">Szukaj</button>
+            <button type="button" onclick="submitRequest()">Search</button>
             <small id="formMessage"></small>
         </form>
-        <hr>
         <!-- request form end -->
+
+        <!-- inputs to sort -->
+        <label for="sortMovies">Sort by: </label>
+        <select id="sortMovies" onchange="sortMovies()">
+            <option disabled selected value> -- select -- </option>
+            <option value="titleSort">Title</option>
+            <option value="ratingSort">Rating</option>
+            <option value="relaseDateSort">Relase Date</option>
+        </select>
+        <!-- inputs to sort end -->
+
+        <!-- inputs to filter -->
+        <label for="filterMovies">Filter by: </label>
+        <select id="filterMovies">
+            <option disabled selected value> -- select -- </option>
+            <option value="ratingFilter">Rating</option>
+            <option value="relaseYearFilter">Relase Year</option>
+        </select>
+        <!-- inputs to filter end -->
+        <hr>
+        
 
         <!-- response result -->
         <div id="searchResult" class="wrapper">
