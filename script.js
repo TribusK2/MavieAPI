@@ -111,7 +111,6 @@ function getMoviesDetails(displayResultCount, data, pageNumber, moviesCount, mov
 
 // search submit request
 function submitRequest(){
-    
     let movieTitle = document.getElementById('movieTitle').value;
     if(movieTitle !== ''){
         // reset values form previuos searching
@@ -119,6 +118,7 @@ function submitRequest(){
         pageNumber = 0;
         data = {'Error': 'No more data'};
         document.getElementById('sortMovies').options.selectedIndex = 0;
+        document.getElementById('filterMovies').options.selectedIndex = 0;
 
         // prepare data to url search request
         let movieTitleUrl = movieTitle.split(' ').join('+');
@@ -131,7 +131,6 @@ function submitRequest(){
         
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-
                 if(this.response){
                 
                     // decode response
@@ -193,6 +192,7 @@ function sortMovies(){
           this.title = movies[i].children[1].innerHTML.substring(titleLabel.length);
           this.awards = movies[i].children[2].innerHTML;
           this.released = movies[i].children[3].innerHTML.substring(relasedLabel.length);
+          this.date = new Date(this.released).toISOString();
           this.runtime = movies[i].children[4].innerHTML.substring(runtimeLabel.length);
           this.ratings = movies[i].children[5].innerHTML.substring(ratingsLabel.length);
           this.plot = movies[i].children[6].innerHTML.substring(plotLabel.length);
@@ -225,6 +225,7 @@ function sortMovies(){
             plot_s[i].innerHTML = plotLabel+newMoviesList[i].plot;
         }
     }
+
     // sort movies depend of sort type
     switch (sortType) {
         case 'titleSort':
@@ -236,7 +237,7 @@ function sortMovies(){
             renderMovies();
             break;
         case 'relaseDateSort':
-            newMoviesList.sort((a,b) => (a.released > b.released) ? -1 : ((b.released > a.released) ? 1 : 0));
+            newMoviesList.sort((a,b) => (a.date > b.date) ? -1 : ((b.date > a.date) ? 1 : 0));
             renderMovies();
             break;
     }      
