@@ -119,6 +119,8 @@ function submitRequest(){
         data = {'Error': 'No more data'};
         document.getElementById('sortMovies').options.selectedIndex = 0;
         document.getElementById('filterMovies').options.selectedIndex = 0;
+        document.getElementById('filterMoviesFrom').options.selectedIndex = 0;
+        document.getElementById('filterMoviesTo').options.selectedIndex = 0;
 
         // prepare data to url search request
         let movieTitleUrl = movieTitle.split(' ').join('+');
@@ -171,6 +173,10 @@ setInterval(function() {
         if(scrollPosition > documentHeight - windowHeight - 1){
             if(displayResultCount * pageNumber < moviesCount){
                 pageNumber += 1;
+                document.getElementById('sortMovies').options.selectedIndex = 0;
+                document.getElementById('filterMovies').options.selectedIndex = 0;
+                document.getElementById('filterMoviesFrom').options.selectedIndex = 0;
+                document.getElementById('filterMoviesTo').options.selectedIndex = 0;
                 getMoviesDetails(displayResultCount, data, pageNumber, moviesCount);
             }
         };
@@ -241,4 +247,52 @@ function sortMovies(){
             renderMovies();
             break;
     }      
+}
+
+// setting sort type of sorting function
+function addFilterElement(valueName, textNode, parentElement){
+    let element = document.createElement('option');
+    element.setAttribute('value', valueName);
+    element.setAttribute('class', 'dynamicValue');
+    parentElement.appendChild(element);
+    element.appendChild(document.createTextNode(textNode));
+}
+function setSortType(){
+    // reset inputs to default values
+    removeResultElement('dynamicValue');
+    document.getElementById('filterMoviesFrom').options.selectedIndex = 0;
+    document.getElementById('filterMoviesTo').options.selectedIndex = 0;
+
+    // get sort type from input list
+    let sortType = document.getElementById('filterMovies').value;
+    let sortTypeFrom = document.getElementById('filterMoviesFrom');
+    let sortTypeTo = document.getElementById('filterMoviesTo');
+    let sortByRankingFromRange = 10;
+    let sortByRankingToRange = 0;
+    let sortByRelaseFromRange = 2019;
+    let sortByRelaseToRange = 1970;
+
+    // set list of "from" and "to" inputs
+    switch (sortType) {
+        case 'rankingFilter':
+            for(let i = sortByRankingFromRange; i > sortByRankingToRange; i--){
+                addFilterElement('from'+i, i, sortTypeFrom);
+                addFilterElement('from'+i, i, sortTypeTo);
+            }          
+            break;
+        case 'relaseYearFilter':
+            for(let i = sortByRelaseFromRange; i > sortByRelaseToRange; i--){
+                addFilterElement('from'+i, i, sortTypeFrom);
+                addFilterElement('from'+i, i, sortTypeTo);
+            }   
+            break;
+    } 
+}
+
+// filter function
+function filterMovies(){
+
+    // get all movies from actual responses
+    let movies = document.getElementsByClassName('result');
+    console.log(movies);
 }

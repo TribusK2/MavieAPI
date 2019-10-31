@@ -11,8 +11,8 @@
 <body>
     <header>
         <h4>Filmformator</h4>
-        <hr>
     </header>
+    <hr>
     <main>
         <!-- request form -->
         <form id="movieSearch" action="#" method="GET">
@@ -22,7 +22,7 @@
             <small id="formMessage"></small>
         </form>
         <!-- request form end -->
-
+        <hr>
         <!-- inputs to sort -->
         <label for="sortMovies">Sort by: </label>
         <select id="sortMovies" onchange="sortMovies()">
@@ -32,19 +32,32 @@
             <option value="relaseDateSort">Relase Date</option>
         </select>
         <!-- inputs to sort end -->
-
+        <br>
         <!-- inputs to filter -->
         <label for="filterMovies">Filter by: </label>
-        <select id="filterMovies">
+        <select id="filterMovies" onchange="setSortType()">
             <option disabled selected value> -- select -- </option>
-            <option value="ratingFilter">Rating</option>
+            <option value="rankingFilter">Ranking</option>
             <option value="relaseYearFilter">Relase Year</option>
         </select>
-        <input id="filterText" type="text">
+
+        <label for="filterMoviesFrom">from: </label>
+        <select id="filterMoviesFrom">
+            <option disabled selected value> -- select -- </option>
+            <!-- <option value="from10">10</option>
+            <option value="from9">9</option> -->
+        </select>
+
+        <label for="filterMoviesTo">to: </label>
+        <select id="filterMoviesTo">
+            <option disabled selected value> -- select -- </option>
+            <!-- <option value="to10">10</option>
+            <option value="to9">9</option> -->
+        </select>
+
+        <button type="button" onclick="filterMovies()">Filter</button>
         <!-- inputs to filter end -->
         <hr>
-        
-
         <!-- response result -->
         <div id="searchResult" class="wrapper">
             
